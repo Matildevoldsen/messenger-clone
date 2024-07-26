@@ -19,7 +19,8 @@ class MessageResource extends JsonResource
             'content' => $this->content,
             'is_typing' => $this->is_typing,
             'user' => UserResource::make($this->whenLoaded('user')),
-            'attachments' => $this->attachments
+            'attachments' => $this->attachments,
+            'created_at' => DateResource::make($this->created_at)
         ];
     }
 }

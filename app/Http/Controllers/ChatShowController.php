@@ -29,6 +29,8 @@ class ChatShowController extends Controller
             $query->where('user_id', $user->id);
         })->with('users')->get();
 
+        $chat->markAsRead();
+
         return Inertia::render('Chat/Show', [
             'chat' => ChatResource::make($chat),
             'chats' => ChatResource::collection($chats),

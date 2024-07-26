@@ -1,5 +1,5 @@
 <script setup>
-import {useForm} from "@inertiajs/vue3";
+import {useForm, usePage} from "@inertiajs/vue3";
 import { ref } from "vue";
 import EmojiPicker from 'vue3-emoji-picker';
 
@@ -53,6 +53,28 @@ function onSelectEmoji(emoji) {
 function removeAttachment(index) {
     form.attachments.splice(index, 1);
 }
+
+function handleKeydown(event) {
+    if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'Enter') {
+        sendMessage();
+        event.preventDefault();
+    }
+
+    if (event.key === 'Enter' && !event.shiftKey && !event.ctrlKey && !event.metaKey) {
+        event.preventDefault();
+        form.content += '\n';
+    }
+}
+
+function userIsTyping() {
+    window.Echo.private(`chats.${props.chat.id}`).whisper('typing', {
+        user: usePage().props.auth.user
+    });
+
+    form.put(route('chat.user.typing', props.chat), {
+        is_typing: true
+    })
+}
 </script>
 <template>
     <div class="sticky bottom-0 bg-white p-4">
@@ -71,6 +93,8 @@ function removeAttachment(index) {
         <div class="relative">
             <textarea name="message"
                       v-model="form.content"
+                      @keydown="handleKeydown"
+                      @input="userIsTyping"
                       placeholder="What's up?"
                       class="p-4 pb-12 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
                       id="message"></textarea>

@@ -20,7 +20,7 @@ class ChatResource extends JsonResource
             'users' => UserResource::collection($this->usersInChat()),
             'messages' => $this->messages->count(),
             'last_message' => MessageResource::make($this->messages->last()),
-            'unread_count' => 0
+            'unread_count' => $this->unreadCount()
         ];
     }
 }
